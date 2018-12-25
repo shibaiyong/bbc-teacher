@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="renderer" content="webkit">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="icon" href="/static/res/img/favicon.ico" type="image/x-icon">
+  <title></title>
+</head>
+<body>
+  <div id="app"></div>
+
+  <!-- <script src="/static/material-library/js/util.js"></script> -->
+  <!-- 视频video.js -->
+  <!-- <script src="/static/lib/video.js"></script> -->
+  <script>
+    /**
+     * 根据域名动态加载video.JS
+     */
+     function dynamicLoadVideoJs() {
+      var head = document.getElementsByTagName('head')[0];
+      var script = document.createElement('script');
+      var domain = document.domain;
+      script.type = 'text/javascript';
+      if (domain.indexOf("viewshare.cn") == -1 && domain.indexOf("viewshare.net") == -1) {
+        script.src = "/static/lib/video.js";
+      } else {
+        script.src = "/static/lib/video-" + domain + ".js";
+      }
+      head.appendChild(script);
+    }
+    dynamicLoadVideoJs();
+  </script>
+</body>   
+</html>

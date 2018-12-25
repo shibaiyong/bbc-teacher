@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="./css/video-js.css">
+    <style>
+        *{
+          margin: 0;
+          padding: 0
+        }
+        .videoBox{
+            width: 800px;
+            height: 450px;
+            margin: 0 auto
+        }
+        .videoBox video, .videoBox .vs-box{ 
+          width: 100%;
+          height: 100%
+        }
+    </style>
+</head>
+<body>
+    <div class="videoBox" id="app">
+      <!-- vs4 -->
+      <div class="vs-box" v-if="videoFlag" id="vsBox"></div>
+      <!-- <embed  type="application/x-shockwave-flash" src="/static/res/secure_ViewBox.swf" width="100%" height="100%" id="f" name="f" flashvars="video=/show/1/cw/1178694D24F6D3BF28168A79B0B37092.vs4&thumbnail=/show/1/cw/1178694D24F6D3BF28168A79B0B37092.jpg&port=80" allowscriptaccess="always" allowfullscreen="true" bgcolor="#000000" wmode="Opaque" /> -->
+
+      <!-- mp4 -->
+      <video 
+        v-if="!videoFlag"
+        ref="videoElement" 
+        poster=""
+        src="" 
+        class="video-js vjs-default-skin vjs-big-play-centered" 
+        controls="controls" 
+        preload="auto" 
+        width="100%">
+      </video>
+      <!--  -->
+    </div>
+
+    <script src="/static/material-library/lib/vue.min.js"></script>
+    <script src="/static/material-library/js/video.min.js"></script>
+    <script src="/static/material-library/js/util.js"></script>
+    <script>
+      var vm = new Vue({
+        el: "#app",
+        data: function () {
+          return {
+            videoFlag: true,
+            video: {
+              cover: '',
+              resource: ''
+            }
+          }
+        },
+        mounted() {
+          this.insertBtnShow()
+        },
+        methods: {
+          // 根据传来的参数showFlag的值来显示按钮
+          insertBtnShow: function () {
+            // 将字符串转化为boolean
+            if (_util.getQueryString('video')) {
+              this.videoFlag = eval(_util.getQueryString('video'))
+              this.videoFlag ? this._setVSResource() : this._setMPResource()
+            }
+            _util.getQueryString('coverUrl') && (this.video.cover = _util.getQueryString('coverUrl'))
+            _util.getQueryString('resourceUrl') && (this.video.resource = _util.getQueryString('resourceUrl'))
+          },
+
+          /**
+           * 设置VS4的视频
+           */
+          _setVSResource: function() {
+            $("#vsBox").html('')
+            // flash的参数
+            let flashvars = 
+              "video=" + 
+              this.video.resource + 
+              "&thumbnail=/" + 
+              this.video.cover + 
+              "&port=80"
+            // video的整个数据
+            let video = 
+              '<embed type="application/x-shockwave-flash" src="/static/res/secure_ViewBox.swf" width="100%" height="100%" id="f" name="f" flashvars="' +
+              flashvars + 
+              ' "allowScriptAccess="always" allowfullscreen="true" bgcolor="#000000" wmode="Opaque"/>'
+
+            $("#vsBox").html(video)
+          },
+
+          /**
+           * 设置MP4的视频
+           */
+          _setMPResource: function() {
+            let poster = document.location.origin + '/show/1/cw/6FA2BC9BD508D30A246C391DF75881F5.jpg'
+            let src = 'http://jq22com.qiniudn.com/jq22-sp.mp4'
+            // 设置poster、src属性的值，来设置对应视频的图片
+            setTimeout( () => {
+             this.$refs.videoElement.setAttribute('poster', poster)
+             this.$refs.videoElement.setAttribute('src', src)
+            }, 50)
+          }
+        }
+      })
+    </script>
+</body>
+</html>

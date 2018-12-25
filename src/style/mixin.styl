@@ -1,0 +1,33 @@
+/**
+ * @Desc css方法
+ */
+
+// 不换行
+no-wrap()
+  text-overflow: ellipsis
+  overflow: hidden
+  white-space: nowrap
+
+// 清除浮动
+clear-float()
+  zoom: 1
+  &:after
+    content: '.'
+    display: block
+    clear: both
+    height: 0
+    visibility: hidden
+
+// 扩展点击区域
+extend-click()
+  position: relative
+  &:before
+    content: ''
+    position: absolute
+    top: -10px
+    left: -10px
+    right: -10px
+    bottom: -10px
+    z-index: -99
+	
+    

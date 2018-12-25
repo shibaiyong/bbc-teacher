@@ -1,0 +1,149 @@
+@font-face {
+  font-family: 'icon-font';
+  src:
+    url('../font/icon-font.ttf?mwg5k0') format('truetype'),
+    url('../font/icon-font.woff?mwg5k0') format('woff'),
+    url('../font/icon-font.svg?mwg5k0#icon-font') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'icon-font' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1
+}
+
+.icon-file-music .path1:before {
+  content: "\e900";
+  color: rgb(0, 190, 202)
+}
+
+.icon-file-music .path2:before {
+  content: "\e901";
+  margin-left: -1em;
+  color: rgb(128, 223, 229)
+}
+
+.icon-file-zip:before {
+  content: "\e902";
+  color: #fd8d59
+}
+
+.icon-file-doc .path1:before {
+  content: "\e903";
+  color: rgb(77, 151, 255)
+}
+
+.icon-file-doc .path2:before {
+  content: "\e904";
+  margin-left: -1em;
+  color: rgb(166, 203, 255)
+}
+
+.icon-file-ppt .path1:before {
+  content: "\e905";
+  color: rgb(255, 152, 67)
+} 
+
+.icon-file-ppt .path2:before {
+  content: "\e906";
+  margin-left: -1em;
+  color: rgb(255, 152, 67)
+} 
+
+.icon-file-ppt .path3:before {
+  content: "\e907";
+  margin-left: -1em;
+  color: rgb(255, 204, 161)
+} 
+
+.icon-file-xls .path1:before {
+  content: "\e908";
+  color: rgb(88, 192, 18)
+} 
+
+.icon-file-xls .path2:before {
+  content: "\e909";
+  margin-left: -1em;
+  color: rgb(172, 224, 137)
+} 
+
+.icon-file-txt .path1:before {
+  content: "\e90a";
+  color: rgb(145, 167, 185)
+} 
+
+.icon-file-txt .path2:before {
+  content: "\e90b";
+  margin-left: -1em;
+  color: rgb(200, 211, 220)
+}
+
+.icon-file-pdf .path1:before {
+  content: "\e90c";
+  color: rgb(255, 91, 90)
+}
+
+.icon-file-pdf .path2:before {
+  content: "\e90d";
+  margin-left: -1em;
+  color: rgb(255, 173, 173)
+} 
+
+.icon-file-png .path1:before {
+  content: "\e90e";
+  color: rgb(255, 102, 104)
+}
+
+.icon-file-png .path2:before {
+  content: "\e90f";
+  margin-left: -1em;
+  color: rgb(255, 102, 104)
+} 
+
+.icon-file-png .path3:before {
+  content: "\e910";
+  margin-left: -1em;
+  color: rgb(255, 179, 180)
+}
+
+.icon-file-video .path1:before {
+  content: "\e911";
+  color: rgb(130, 131, 242);
+
+} 
+
+.icon-file-video .path2:before {
+  content: "\e912";
+  margin-left: -1em;
+  color: rgb(193, 193, 249)
+} 
+
+.icon-file-unknow .path1:before{
+  content: "\e913";
+  color: rgb(220, 220, 220)
+}
+
+.icon-file-unknow .path2:before {
+  content: "\e914";
+  margin-left: -1em;
+  color: rgb(238, 238, 238)
+}
+
+.icon-file-folder .path1:before {
+  content: "\e915";
+  color: rgb(236, 192, 73)
+} 
+
+.icon-file-folder .path2:before {
+  content: "\e916";
+  margin-left: -1em;
+  color: rgb(255, 214, 88)
+}
+

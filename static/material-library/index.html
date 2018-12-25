@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>我的素材库</title>
+  <link rel="stylesheet" href="./css/reset.css">
+  <link rel="stylesheet" href="./css/icon.css">
+  <link rel="stylesheet" href="./css/index.css">
+  <link rel="stylesheet" href="./css/video-js.css">
+</head>
+
+<body>
+  <div id="app" >
+    <!-- 内容容器 -->
+    <div class="content-wrapper cl">
+      <div class="content-left">
+        <!-- tab -->
+        <ul class="content-tab cl">
+          <li class="tab-item" :class="{'tab-active': activeIndex == 0}" @click="_getMaterialData(0)">平台资源</li>
+          <li class="tab-item" :class="{'tab-active': activeIndex == 1}" @click="_getCollectionData(1)">我的收藏</li>
+          <li class="tab-item" :class="{'tab-active': activeIndex == 2}" @click="_getCloudDiskData(2)">备课云盘</li>
+        </ul>
+
+        <!-- list -->
+        <div class="content-list">
+          <!-- 平台 -->
+          <div class="list-wrapper" v-show="activeIndex == 0">
+            <!-- 搜藏 -->
+            <div class="list-search cl">
+              <input type="text" class="search-input" v-model="queryParam.search" placeholder="输入关键词" @keyup.enter="_searchClick">
+              <span class="search-btn" @click="_searchClick"></span>
+
+              <!-- reset按钮 -->
+              <div class="reset-btn" v-if="flags.resetBtnFlag" @click="_resetClick"></div>
+
+              <!-- 类别select -->
+              <div v-else class="search-select cl">
+                <span class="select-span" @click="flags.typeFlag = !flags.typeFlag">{{selectValue}}</span>
+                <i class="arrow-select" @click="flags.typeFlag = !flags.typeFlag"></i>
+
+                <div class="select-uls cl" @mouseleave="_hidetSelectUl">
+                  <!-- 类别 -->
+                  <ul class="select-item type-ul" v-show="flags.typeFlag">  
+                    <li 
+                      v-for="(item, index) in typeOptions" 
+                      @mouseover="_getTypeData(item)">
+                      {{item.chapterOneTitle}} 
+                      <i class="type-ul-icon"></i>
+                    </li>
+                  </ul>
+  
+                  <!-- 主题 -->
+                  <ul class="select-item subject-ul" v-show="flags.subjectFlag">
+                    <li v-for="(item, index) in subjectOptions" :title="item.sujectId" @click="_getSubjectData(item)">{{item.chapterTwoTitle}}</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 数据展示 -->
+            <div class="list-show">
+              <!-- 滚动条 -->
+              <div class="data-section cl" id="platformScroll">
+                <ul v-if="hasDataFlag">
+                  <li class="fl materialLis" v-for="(item, index) in materialList" :key="index">
+                    <img
+                      :src="item.path + item.coverUrl" 
+                      class="data-img"
+                      @click="_showDetail(item)"/>
+                    <span class="data-name">{{item.resourceTitle}}</span>
+                  </li>
+                </ul>
+                <!-- 分页 -->
+                <div style="text-align:center;float:left;width:100%" v-if="hasDataFlag">
+                  <div class="platform-pagination"></div>
+                </div>
+
+                <!-- 没有数据 -->
+                <ul v-if="!hasDataFlag" style="text-align:center; line-height: 200px">
+                  很抱歉，当前项没有数据
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- 收藏 -->
+          <div class="list-wrapper" v-show="activeIndex == 1">
+            <!-- 数据展示 -->
+            <div class="list-show-collection">
+              <!-- 滚动条 -->
+              <div class="data-collec-section cl" id="collectionScroll">
+                <ul v-if="hasDataFlag">
+                  <li class="fl materialLis" v-for="(item, index) in collectionList" :key="index">
+                    <img 
+                      :src="item.path + item.coverUrl" 
+                      class="data-img"
+                      @click="_showDetail(item)"/>
+                    <span class="data-name">{{item.resourceTitle}}</span>
+                  </li>
+                </ul>
+
+                <!-- 分页 -->
+                <div v-if="hasDataFlag" style="text-align:center;float:left;width:100%">
+                  <div class="collection-pagination"></div>
+                </div>
+
+                <!-- 没有数据 -->
+                <ul v-if="!hasDataFlag" style="text-align:center; line-height: 200px">
+                  很抱歉，当前项没有数据
+                </ul>
+              </div>
+            </div>
+          </div>
+             
+          <!-- 备课云盘 -->
+          <div class="list-wrapper" v-show="activeIndex == 2">
+            <div class="list-show-collection">
+              <!-- 滚动条 -->
+              <div class="data-collec-section cl" id="fileScroll">
+                <ul v-if="hasDataFlag">
+                  <li v-for="(item, index) in cloudList" :key="index" class="file-item">
+                      <!--  -->
+                    <div class="cloud-item" @click="_fileItemClick(item)">
+                      <!-- arrow -->
+                      <i v-show="item.isFolder && item.folderData && item.folderData.length" class="icon icon-arrow icon-arrow-transform"></i>
+                      <!-- 空白  -->
+                      <i v-show="!item.isFolder || (item.isFolder && item.folderData && !item.folderData.length)" class="icon icon-point"></i>
+                      <!-- 文件图标  -->
+                      <i v-if="item.isFolder" class="icon icon-file-folder">
+                        <span class="path1"></span><span class="path2"></span><span class="path3"></span>
+                      </i>
+                      <i v-else 
+                        class="icon"
+                        :class="{
+                          'icon-file-txt': regular.txt.test(item.fileMime),
+                          'icon-file-png': regular.png.test(item.fileMime),
+                          'icon-file-video': regular.video.test(item.fileMime),
+                          'icon-file-music': regular.music.test(item.fileMime),
+                          'icon-file-doc': regular.doc.test(item.fileMime),
+                          'icon-file-ppt': regular.ppt.test(item.fileMime),
+                          'icon-file-xls': regular.xls.test(item.fileMime),
+                          'icon-file-pdf': regular.pdf.test(item.fileMime),
+                          'icon-file-zip': regular.zip.test(item.fileMime),
+                          'icon-file-unknow': !regular.unknow.test(item.fileMime)
+                          }">
+                        <span class="path1"></span><span class="path2"></span><span class="path3"></span>
+                      </i>
+                      <span class="file-name">{{item.fileName}}</span>
+                    </div>
+                    <!--  -->
+                    <ul class="child-ul" v-if="item.folderData && item.folderData.length" style="padding-left: 45px;display:none">
+                      <li v-for="(item, index) in item.folderData" :key="index" @click="getItemInfo(item)"  class="child-item">
+                        <!-- 文件除了图片就是视频   -->
+                        <i v-if="item.isFolder" class="icon icon-file-folder">
+                          <span class="path1"></span><span class="path2"></span><span class="path3"></span>
+                        </i>
+                        <i v-else 
+                          class="icon"
+                          :class="{
+                            'icon-file-txt': regular.txt.test(item.fileMime),
+                            'icon-file-png': regular.png.test(item.fileMime),
+                            'icon-file-video': regular.video.test(item.fileMime),
+                            'icon-file-music': regular.music.test(item.fileMime),
+                            'icon-file-doc': regular.doc.test(item.fileMime),
+                            'icon-file-ppt': regular.ppt.test(item.fileMime),
+                            'icon-file-xls': regular.xls.test(item.fileMime),
+                            'icon-file-pdf': regular.pdf.test(item.fileMime),
+                            'icon-file-zip': regular.zip.test(item.fileMime),
+                            'icon-file-unknow': !regular.unknow.test(item.fileMime)
+                            }">
+                          <span class="path1"></span><span class="path2"></span><span class="path3"></span>
+                        </i>
+                        <span class="file-name">{{item.fileName}}</span> 
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+
+                <!-- 没有数据 -->
+                <ul v-if="!hasDataFlag" style="text-align:center; line-height: 200px">
+                  很抱歉，当前项没有数据
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content-right" v-if="hasDataFlag">
+        <!-- 平台资源、收藏 -->
+        <div class="video-box" id="VideoBox" v-show="activeIndex == 0 || activeIndex == 1"></div>
+
+        <!-- 云盘 -->
+        <div class="video-box" v-show="activeIndex == 2">
+          <!-- 视频 -->
+          <video
+            v-if="(itemInfo.fileMime === 'mp4' || itemInfo.fileMime === 'ogg' || itemInfo.fileMime === 'webm') && itemInfo.fileUrl"
+            :src="itemInfo.fileUrl"
+            ref="videoElement" 
+            poster="" 
+            class="video-js vjs-default-skin vjs-big-play-centered" 
+            preload="auto" 
+            controls="controls" 
+            width="100%">
+          </video>
+          <!-- 图片 -->
+          <img v-else-if="(itemInfo.fileMime === 'png' || itemInfo.fileMime === 'jpg') && itemInfo.fileUrl" :src="itemInfo.fileUrl" :title="itemInfo.fileName">
+          <!-- 不支持预览 -->
+          <div v-else>此格式暂不支持预览</div>
+        </div>
+        <!-- 视频名称 -->
+        <div class="video-name cl">
+          <p v-show="activeIndex == 0 || activeIndex == 1">{{itemInfo.resourceTitle}}</p>
+          <p v-show="activeIndex == 2">{{itemInfo.fileName}}</p>
+
+          <!-- 收藏按钮 平台区域 -->
+          <div class="video-collect" v-show="activeIndex == 0" @click="_changeCollectedStatus(itemInfo)">
+            <i class="collect-icon" :class="{collected:itemInfo.hasCollected, notcollected: !itemInfo.hasCollected}"></i>
+            <span style="display:inline-block" v-show="itemInfo.hasCollected">已收藏</span>
+            <span style="display:inline-block" v-show="!itemInfo.hasCollected">收藏</span>  
+          </div>
+
+          <!-- 收藏的收藏按钮 -->
+          <div class="video-collect" v-show="activeIndex == 1" @click="_removeCollectedStatus(itemInfo)">
+            <i class="collect-icon" :class="{collected:true}"></i>
+            <span style="display:inline-block" v-show="true">已收藏</span>
+          </div>
+        </div>
+
+        <!-- 视频标签 -->
+        <div class="video-tab cl">
+          <span v-for="(item, index) in itemInfo.keyword">{{item}}</span>
+        </div>
+
+        <!-- 详情和插入按钮区域 -->
+        <div class="video-insert cl">
+          <p>{{itemInfo.description}}</p>
+          <div class="insert-button" v-show="flags.insertFlag && activeIndex != 2" @click="_sendResourceInfo(itemInfo)"></div>
+          <div class="insert-button" v-show="flags.insertFlag && flags.disabledBtnFlag && activeIndex == 2" @click="_sendResourceInfo(itemInfo)"></div>
+          <div class="uninsert-button" v-show="flags.insertFlag && !flags.disabledBtnFlag && activeIndex == 2">不可插入</div>
+        </div>
+      </div>
+
+      <!-- 没有数据 -->
+      <div class="content-right" v-if="!hasDataFlag" style="line-height: 500px;font-size: 30px;text-align:center">
+        很抱歉，当前项没有数据
+      </div>
+    </div>
+  </div>
+
+  <!-- 插件 -->
+  <script src="/static/material-library/lib/jquery.min.js"></script>
+  <script src="/static/material-library/lib/jquery.pagination.js"></script>
+  <script src="/static/material-library/lib/vue.min.js"></script>
+  <script src="/static/material-library/lib/video.min.js"></script>
+
+  <!-- js -->
+  <script src="/static/material-library/js/regular.js"></script>
+  <script src="/static/material-library/js/require.js" defer async="true"></script>
+  <script src="/static/material-library/js/require.js" data-main="/static/material-library/js/index"></script>
+  <script src="/static/material-library/js/util.js"></script>
+  <!-- h5 -->
+  <!-- <script src="/static/lib/video.js"></script> -->
+  <script>
+      /**
+       * 根据域名动态加载video.JS
+       */
+       function dynamicLoadVideoJs() {
+        var head = document.getElementsByTagName('head')[0];
+        var script = document.createElement('script');
+        var domain = document.domain;
+        script.type = 'text/javascript';
+        if (domain.indexOf("viewshare.cn") == -1 && domain.indexOf("viewshare.net") == -1) {
+          script.src = "/static/lib/video.js";
+        } else {
+          script.src = "/static/lib/video-" + domain + ".js";
+        }
+        head.appendChild(script);
+      }
+      dynamicLoadVideoJs();
+    </script>
+</body>
+</html>
