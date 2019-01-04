@@ -50,6 +50,10 @@
         <button class="button-item" @click="_handleLogin">登录</button>
       </div>
     </login-content-box>
+
+
+    <Selectt/>
+    
   </div>
 </template>
 
@@ -64,11 +68,12 @@
     } from 'lib/util'
   import { Base64 } from 'js-base64'
   import cookie from 'js-cookie'
-
+  import Selectt from 'component/select.vue'
   export default {
     name: 'Login',
     components: {
-      LoginContentBox
+      LoginContentBox,
+      Selectt
     },
     data: function() {
       return {
