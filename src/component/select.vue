@@ -64,7 +64,6 @@ export default {
         border: 1px solid #e9e9e9;
         border-collapse: collapse;
         border-spacing: 0;
-        // 隐藏表格中空单元格上的边框和背景：
         empty-cells: show;
     }
     th,
